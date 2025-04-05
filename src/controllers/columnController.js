@@ -9,8 +9,8 @@ const createNew = async (req, res, next) => {
 }
 const update = async (req, res, next) => {
     try {
-        const updatedBoard = await boardService.update(req.params.id, req.body)
-        res.status(StatusCodes.OK).json(updatedBoard)
+        const updatedColumn = await columnService.update(req.params.id, req.body)
+        res.status(StatusCodes.OK).json(updatedColumn)
     } catch (error) {
         throw error
     }

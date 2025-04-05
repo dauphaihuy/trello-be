@@ -53,10 +53,30 @@ const pushCardOrderIds = async (card) => {
         return result
     } catch (error) { throw error }
 }
+const INVALID_UPDATE_FIELDS = ['_id', 'boardId', 'createdAt']
+const update = async (columnId, updateData) => {
+    try {
+        Object.keys(updateData).forEach(fieldName => {
+            if (INVALID_UPDATE_FIELDS.includes(fieldName)) {
+                delete updateData[fieldName]
+            }
+        })
+        if (updateData.cardOrderIds) {
+            updateData.cardOrderIds = updateData.cardOrderIds.map(_id => new ObjectId(_id))
+        }
+        const result = await GET_DB().collection(COLUMN_COLLECTION_NAME).findOneAndUpdate(
+            { _id: new ObjectId(columnId) },  // Find the document by boardId
+            { $set: updateData },  // Push column ID into the array
+            { returnDocument: 'after' }  // Return the updated document
+        );
+        return result
+    } catch (error) { throw error }
+}
 export const columnModel = {
     COLUMN_COLLECTION_NAME,
     COLUMN_COLLECTION_SCHEMA,
     createNew,
     findOneById,
-    pushCardOrderIds
+    pushCardOrderIds,
+    update
 }

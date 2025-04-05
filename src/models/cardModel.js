@@ -39,9 +39,27 @@ const findOneById = async (id) => {
         return result
     } catch (error) { throw error }
 }
+const INVALID_UPDATE_FIELDS = ['_id', 'boardId', 'createdAt']
+const update = async (cardId, updateData) => {
+    try {
+        Object.keys(updateData).forEach(fieldName => {
+            if (INVALID_UPDATE_FIELDS.includes(fieldName)) {
+                delete updateData[fieldName]
+            }
+        })
+        if (updateData.columnId) updateData.columnId = new ObjectId(updateData.columnId)
+        const result = await GET_DB().collection(CARD_COLLECTION_NAME).findOneAndUpdate(
+            { _id: new ObjectId(cardId) },  // Find the document by boardId
+            { $set: updateData },  // Push column ID into the array
+            { returnDocument: 'after' }  // Return the updated document
+        )
+        return result
+    } catch (error) { throw error }
+}
 export const cardModel = {
     CARD_COLLECTION_NAME,
     CARD_COLLECTION_SCHEMA,
     createNew,
-    findOneById
+    findOneById,
+    update
 }
