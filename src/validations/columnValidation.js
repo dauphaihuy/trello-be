@@ -34,7 +34,21 @@ const update = async (req, res, next) => {
         next(customeErr)
     }
 }
+const deleteItem = async (req, res, next) => {
+    try {
+        const validation = Joi.object({
+            id: Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE).required()
+        })
+        await validation.validateAsync(req.params)
+        next()
+    } catch (error) {
+        const message = new Error(error).message
+        const customeErr = new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, message)
+        next(customeErr)
+    }
+}
 export const columnValidation = {
     createNew,
-    update
+    update,
+    deleteItem
 }
