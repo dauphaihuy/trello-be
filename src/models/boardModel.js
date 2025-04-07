@@ -1,8 +1,8 @@
-import { GET_DB } from "~/config/mongodb"
-import { ObjectId, ReturnDocument } from "mongodb"
-import Joi from "joi"
-import { columnModel } from "./columnModel "
-import { cardModel } from "./cardModel"
+import { GET_DB } from '~/config/mongodb'
+import { ObjectId, ReturnDocument } from 'mongodb'
+import Joi from 'joi'
+import { columnModel } from './columnModel '
+import { cardModel } from './cardModel'
 const BOARD_COLLECTION_NAME = 'boards'
 const BOARD_COLLECTION_SCHEMA = Joi.object({
     title: Joi.string().min(3).max(30).trim().strict().required(),
@@ -25,7 +25,7 @@ const createNew = async (data) => {
 const validBeforeInsert = async (data) => {
     return await BOARD_COLLECTION_SCHEMA.validateAsync(data, { abortEarly: false })
 }
-const findOneById = async () => {
+const findOneById = async (id) => {
     try {
         const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOne({
             _id: new ObjectId(id)

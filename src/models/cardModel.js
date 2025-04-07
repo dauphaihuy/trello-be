@@ -1,6 +1,6 @@
-import Joi from "joi";
-import { ObjectId } from "mongodb";
-import { GET_DB } from "~/config/mongodb";
+import Joi from 'joi'
+import { ObjectId } from 'mongodb'
+import { GET_DB } from '~/config/mongodb'
 import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators'
 const CARD_COLLECTION_NAME = 'cards'
 const CARD_COLLECTION_SCHEMA = Joi.object({
@@ -21,7 +21,7 @@ const createNew = async (data) => {
         const newCardToAdd = {
             ...validData,
             boardId: new ObjectId(validData.boardId),
-            columnId: new ObjectId(validData.columnId),
+            columnId: new ObjectId(validData.columnId)
         }
         const createdCard = await GET_DB().collection(CARD_COLLECTION_NAME)
             .insertOne(newCardToAdd)
@@ -49,9 +49,9 @@ const update = async (cardId, updateData) => {
         })
         if (updateData.columnId) updateData.columnId = new ObjectId(updateData.columnId)
         const result = await GET_DB().collection(CARD_COLLECTION_NAME).findOneAndUpdate(
-            { _id: new ObjectId(cardId) },  // Find the document by boardId
-            { $set: updateData },  // Push column ID into the array
-            { returnDocument: 'after' }  // Return the updated document
+            { _id: new ObjectId(cardId) }, // Find the document by boardId
+            { $set: updateData }, // Push column ID into the array
+            { returnDocument: 'after' } // Return the updated document
         )
         return result
     } catch (error) { throw error }
@@ -62,7 +62,6 @@ const deleteManyById = async (columnId) => {
         const result = await GET_DB().collection(CARD_COLLECTION_NAME).deleteMany({
             columnId: new ObjectId(columnId)
         })
-        console.log(result)
         return result
     } catch (error) { throw error }
 }
@@ -73,6 +72,6 @@ export const cardModel = {
     createNew,
     findOneById,
     update,
-    deleteManyById,
+    deleteManyById
 
 }

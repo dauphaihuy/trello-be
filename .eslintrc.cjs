@@ -28,7 +28,7 @@ module.exports = {
     'no-multiple-empty-lines': 1,
     'space-before-blocks': ['error', 'always'],
     'object-curly-spacing': [1, 'always'],
-    'indent': ['warn', 2, 'tab'],
+    'indent': 'off',
     'semi': [1, 'never'],
     'quotes': ['error', 'single'],
     'array-bracket-spacing': 1,
@@ -37,6 +37,7 @@ module.exports = {
     'keyword-spacing': 1,
     'comma-dangle': 1,
     'comma-spacing': 1,
-    'arrow-spacing': 1
+    'arrow-spacing': 1,
+    'no-useless-catch': 'off'
   }
 }

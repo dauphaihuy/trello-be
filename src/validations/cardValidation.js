@@ -1,7 +1,7 @@
-import { StatusCodes } from "http-status-codes"
-import Joi from "joi"
-import ApiError from "~/utils/ApiError"
-import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from "~/utils/validators"
+import { StatusCodes } from 'http-status-codes'
+import Joi from 'joi'
+import ApiError from '~/utils/ApiError'
+import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators'
 const correctCondition = Joi.object({
     boardId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
     columnId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),

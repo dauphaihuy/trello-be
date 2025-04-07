@@ -1,8 +1,8 @@
-import { StatusCodes } from "http-status-codes"
-import { cloneDeep } from "lodash"
-import { boardModel } from "~/models/boardModel"
-import { cardModel } from "~/models/cardModel"
-import ApiError from "~/utils/ApiError"
+import { StatusCodes } from 'http-status-codes'
+import { cloneDeep } from 'lodash'
+import { boardModel } from '~/models/boardModel'
+import { cardModel } from '~/models/cardModel'
+import ApiError from '~/utils/ApiError'
 import { slugify } from '~/utils/index'
 const createNew = async (data) => {
     try {

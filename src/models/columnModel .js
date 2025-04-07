@@ -46,10 +46,10 @@ const findOneById = async (id) => {
 const pushCardOrderIds = async (card) => {
     try {
         const result = await GET_DB().collection(COLUMN_COLLECTION_NAME).findOneAndUpdate(
-            { _id: new ObjectId(card.columnId) },  // Find the document by boardId
-            { $push: { cardOrderIds: new ObjectId(card._id) } },  // Push column ID into the array
-            { returnDocument: 'after' }  // Return the updated document
-        );
+            { _id: new ObjectId(card.columnId) }, // Find the document by boardId
+            { $push: { cardOrderIds: new ObjectId(card._id) } }, // Push column ID into the array
+            { returnDocument: 'after' } // Return the updated document
+        )
         return result
     } catch (error) { throw error }
 }
@@ -65,10 +65,10 @@ const update = async (columnId, updateData) => {
             updateData.cardOrderIds = updateData.cardOrderIds.map(_id => new ObjectId(_id))
         }
         const result = await GET_DB().collection(COLUMN_COLLECTION_NAME).findOneAndUpdate(
-            { _id: new ObjectId(columnId) },  // Find the document by boardId
-            { $set: updateData },  // Push column ID into the array
-            { returnDocument: 'after' }  // Return the updated document
-        );
+            { _id: new ObjectId(columnId) }, // Find the document by boardId
+            { $set: updateData }, // Push column ID into the array
+            { returnDocument: 'after' } // Return the updated document
+        )
         return result
     } catch (error) { throw error }
 }
@@ -78,7 +78,6 @@ const deleteOneById = async (columnId) => {
         const result = await GET_DB().collection(COLUMN_COLLECTION_NAME).deleteOne({
             _id: new ObjectId(columnId)
         })
-        console.log(result)
         return result
     } catch (error) { throw error }
 }
@@ -89,6 +88,6 @@ export const columnModel = {
     findOneById,
     pushCardOrderIds,
     update,
-    deleteOneById,
+    deleteOneById
 
 }
