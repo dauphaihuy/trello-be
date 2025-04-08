@@ -10,7 +10,7 @@ Router.route('/').get((req, res) => {
 })
     .post(boardValidation.createNew, boardController.createNew)
 Router.route('/:id')
-    .get(boardController.getDetails)
+    .get(boardValidation.getDetails, boardController.getDetails)
     .put(boardValidation.update, boardController.update)
 Router.route('/supports/moving_cards')
     .put(boardValidation.moveCardToDiffColumn, boardController.moveCardToDiffColumn)

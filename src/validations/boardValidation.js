@@ -17,7 +17,19 @@ const createNew = async (req, res, next) => {
         next(customeErr)
     }
 }
-const getDetails = async () => {
+const getDetails = async (req, res, next) => {
+    try {
+        const validation = Joi.object({
+            id: Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE).required()
+        })
+        await validation.validateAsync(req.params)
+        next()
+    } catch (error) {
+        const message = new Error(error).message
+        const customeErr = new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, message)
+        next(customeErr)
+    }
+
 
 }
 const update = async (req, res, next) => {
@@ -54,7 +66,6 @@ const moveCardToDiffColumn = async (req, res, next) => {
             )
 
         })
-        console.log(req.body)
         await validation.validateAsync(req.body, { abortEarly: false })
         next()
     } catch (error) {
@@ -66,5 +77,6 @@ const moveCardToDiffColumn = async (req, res, next) => {
 export const boardValidation = {
     createNew,
     update,
-    moveCardToDiffColumn
+    moveCardToDiffColumn,
+    getDetails
 }
