@@ -39,7 +39,6 @@ const findOneById = async (userId) => {
 }
 const createNew = async (data) => {
     try {
-        console.log('4 userModel', data)
         const validData = await validateBeforeCreate(data)
         const createdUser = await GET_DB().collection(USER_COLLECTION_NAME).insertOne(validData)
         return createdUser
@@ -56,12 +55,12 @@ const findOneByEmail = async (emailValue) => {
     }
 }
 const update = async (userId, updateData) => {
-    // Mã này cho phép cập nhật linh tinh
-    const fileName = Object.keys(updateData)[0]
-    if (!INVALID_UPDATE_FIELDS.includes(fileName)) {
-        throw new Error('Invalid field name')
-    }
 
+    Object.keys(updateData).forEach(fieldName => {
+        if (INVALID_UPDATE_FIELDS.includes(fieldName)) {
+            delete updateData[fieldName]
+        }
+    })
     const result = await GET_DB().collection(USER_COLLECTION_NAME).findOneAndUpdate(
         { _id: userId },
         { $set: updateData },

@@ -9,7 +9,7 @@ import cors from 'cors'
 import { corsOptions } from './config/cors'
 const START_SEVER = () => {
   const app = express()
-  // app.use(cors(corsOptions))
+  app.use(cors(corsOptions))
   app.get('/', (req, res) => {
     // Test Absolute import mapOrder
     console.log(mapOrder(

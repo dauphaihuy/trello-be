@@ -45,7 +45,6 @@ const update = async (boardId, reqBody) => {
     }
 }
 const moveCardToDiffColumn = async (reqBody) => {
-    console.log(reqBody)
     try {
         await boardModel.update(reqBody.prevColumnId, {
             cardOrderIds: reqBody.prevCardOrderIds,
