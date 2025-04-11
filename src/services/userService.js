@@ -81,12 +81,14 @@ const login = async (reqBody) => {
         const accessToken = await jwtProvide.generateToken(
             userInfo,
             env.ACCESS_TOKEN_SECRET_SIGNATURE,
-            env.ACCESS_TOKEN_LIFE
+            // env.ACCESS_TOKEN_LIFE
+            5
         )
         const refreshToken = await jwtProvide.generateToken(
             userInfo,
             env.REFRESH_TOKEN_SECRET_SIGNATURE,
-            env.REFRESH_TOKEN_LIFE
+            // env.REFRESH_TOKEN_LIFE
+            15
         )
         // Thông tin sẽ đính kèm trong JWT Token bao gồm _id và email của user
         // Tạo ra 2 loại token, accessToken và refreshToken để trả về cho phía FE
@@ -94,8 +96,33 @@ const login = async (reqBody) => {
         return { accessToken, refreshToken, ...pickUser(existUser) }
     } catch (error) { throw error }
 }
+const refreshToken = async (clientRefreshToken) => {
+    try {
+        // Verify / giải mã token xem có hợp lệ hay không
+        const refreshTokenDecoded = await jwtProvide.verifyToken(
+            clientRefreshToken,
+            env.REFRESH_TOKEN_SECRET_SIGNATURE
+        )
+        const userInfo = {
+            _id: refreshTokenDecoded._id,
+            email: refreshTokenDecoded.email
+        }
+
+        const accessToken = await jwtProvide.generateToken(
+            userInfo,
+            env.ACCESS_TOKEN_SECRET_SIGNATURE,
+            // '1h' // Token life
+            5
+        )
+
+        return { accessToken }
+    } catch (error) {
+        throw error
+    }
+}
 export const userService = {
     createNew,
     verifyAccount,
-    login
+    login,
+    refreshToken
 }

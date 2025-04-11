@@ -19,16 +19,6 @@ const START_SEVER = () => {
   })
   app.use(cookieParser())
   app.get('/', (req, res) => {
-    // Test Absolute import mapOrder
-    // console.log(mapOrder(
-    //   [{ id: 'id-1', name: 'One' },
-    //   { id: 'id-2', name: 'Two' },
-    //   { id: 'id-3', name: 'Three' },
-    //   { id: 'id-4', name: 'Four' },
-    //   { id: 'id-5', name: 'Five' }],
-    //   ['id-5', 'id-4', 'id-2', 'id-3', 'id-1'],
-    //   'id'
-    // ))
     res.end('<h1>Hello World!</h1><hr>')
   })
   app.use(express.json())
@@ -36,7 +26,7 @@ const START_SEVER = () => {
   app.use(errorHandlingMiddleware)
   app.listen(env.HOST_NUMBER, env.HOST_NAME, () => {
     // eslint-disable-next-line no-console
-    console.log(`Hello Trung Quan Dev, I am running at ${env.HOST_NAME}:${env.HOST_NUMBER}/`)
+    console.log(`Hello, I am running at ${env.HOST_NAME}:${env.HOST_NUMBER}/`)
   })
 }
 (async () => {
