@@ -56,7 +56,6 @@ const findOneByEmail = async (emailValue) => {
     }
 }
 const update = async (userId, updateData) => {
-
     Object.keys(updateData).forEach(fieldName => {
         if (INVALID_UPDATE_FIELDS.includes(fieldName)) {
             delete updateData[fieldName]
@@ -70,7 +69,7 @@ const update = async (userId, updateData) => {
     if (!result) {
         throw new Error('Update failed')
     }
-    return result.value
+    return result
 }
 export const userModel = {
     USER_COLLECTION_NAME,

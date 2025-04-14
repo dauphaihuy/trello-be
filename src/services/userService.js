@@ -81,14 +81,14 @@ const login = async (reqBody) => {
         const accessToken = await jwtProvide.generateToken(
             userInfo,
             env.ACCESS_TOKEN_SECRET_SIGNATURE,
-            // env.ACCESS_TOKEN_LIFE
-            5
+            env.ACCESS_TOKEN_LIFE
+            // 5
         )
         const refreshToken = await jwtProvide.generateToken(
             userInfo,
             env.REFRESH_TOKEN_SECRET_SIGNATURE,
-            // env.REFRESH_TOKEN_LIFE
-            15
+            env.REFRESH_TOKEN_LIFE
+            // 15
         )
         // Thông tin sẽ đính kèm trong JWT Token bao gồm _id và email của user
         // Tạo ra 2 loại token, accessToken và refreshToken để trả về cho phía FE
@@ -120,9 +120,37 @@ const refreshToken = async (clientRefreshToken) => {
         throw error
     }
 }
+const update = async (userId, reqBody) => {
+    try {
+        // Query User và kiểm tra cho chắc chắn
+        const existUser = await userModel.findOneById(userId)
+        if (!existUser) throw new ApiError(StatusCodes.NOT_FOUND, 'Account not found!')
+        if (!existUser.isActive) throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Your account is not active!')
+
+        // Khởi tạo kết quả updated User ban đầu là empty
+        let updatedUser = {}
+        const salt = bcryptjs.genSaltSync(10)
+        if (reqBody.current_password && reqBody.new_password) {
+            //ktra password hien tai
+            if (!bcryptjs.compareSync(reqBody.current_password, existUser.password)) {
+                throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Your current password is incorrect')
+            }
+            // neu current password dung hash 1 mk moi
+            updatedUser = await userModel.update(existUser._id, {
+                password: bcryptjs.hashSync(reqBody.new_password, salt)
+            })
+        }
+        else {
+            //truong hop update thong tin chung
+            updatedUser = await userModel.update(existUser._id, reqBody)
+        }
+        return pickUser(updatedUser)
+    } catch (error) { throw error }
+}
 export const userService = {
     createNew,
     verifyAccount,
     login,
-    refreshToken
+    refreshToken,
+    update
 }
