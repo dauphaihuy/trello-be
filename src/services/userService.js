@@ -8,6 +8,7 @@ import { BrevoProvider } from '../providers/BrevoProvider'
 import { pickUser } from '~/utils/formatters'
 import { jwtProvide } from '~/providers/JwtProvider'
 import { env } from '~/config/environment'
+import { CloudinaryProvider } from '~/providers/CloudinaryProvider'
 const createNew = async (reqBody) => {
     try {
         //ktra email da ton tai hay chua
@@ -120,7 +121,7 @@ const refreshToken = async (clientRefreshToken) => {
         throw error
     }
 }
-const update = async (userId, reqBody) => {
+const update = async (userId, reqBody, userAvatarFile) => {
     try {
         // Query User và kiểm tra cho chắc chắn
         const existUser = await userModel.findOneById(userId)
@@ -140,10 +141,21 @@ const update = async (userId, reqBody) => {
                 password: bcryptjs.hashSync(reqBody.new_password, salt)
             })
         }
+        else if (userAvatarFile) {
+            console.log(' truong hop upload avatar')
+
+            // truong hop upload file
+            const uploadResult = await CloudinaryProvider.streamUpload(userAvatarFile.buffer, 'users')
+            updatedUser = await userModel.update(existUser._id, {
+                avatar: uploadResult.secure_url
+            })
+        }
         else {
+            console.log('truong hop update thong tin chung')
             //truong hop update thong tin chung
             updatedUser = await userModel.update(existUser._id, reqBody)
         }
+        console.log(updatedUser)
         return pickUser(updatedUser)
     } catch (error) { throw error }
 }

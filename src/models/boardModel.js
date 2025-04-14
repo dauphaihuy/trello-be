@@ -69,10 +69,10 @@ const getDetails = async (id) => {
 const pushColumnOrderIds = async (column) => {
     try {
         const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
-            { _id: new ObjectId(column.boardId) },  // Find the document by boardId
-            { $push: { columnOrderIds: new ObjectId(column._id) } },  // Push column ID into the array
-            { returnDocument: 'after' }  // Return the updated document
-        );
+            { _id: new ObjectId(column.boardId) }, // Find the document by boardId
+            { $push: { columnOrderIds: new ObjectId(column._id) } }, // Push column ID into the array
+            { returnDocument: 'after' } // Return the updated document
+        )
         return result
     } catch (error) { throw error }
 }
@@ -89,10 +89,10 @@ const update = async (boardId, updateData) => {
             updateData.columnOrderIds = updateData.columnOrderIds.map(_id => new ObjectId(_id))
         }
         const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
-            { _id: new ObjectId(boardId) },  // Find the document by boardId
-            { $set: updateData },  // Push column ID into the array
-            { returnDocument: 'after' }  // Return the updated document
-        );
+            { _id: new ObjectId(boardId) }, // Find the document by boardId
+            { $set: updateData }, // Push column ID into the array
+            { returnDocument: 'after' } // Return the updated document
+        )
         return result
     } catch (error) { throw error }
 }
@@ -101,10 +101,10 @@ const update = async (boardId, updateData) => {
 const pullColumnOrderIds = async (column) => {
     try {
         const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
-            { _id: new ObjectId(column.boardId) },  // Find the document by boardId
-            { $pull: { columnOrderIds: new ObjectId(column._id) } },  // Push column ID into the array
-            { returnDocument: 'after' }  // Return the updated document
-        );
+            { _id: new ObjectId(column.boardId) }, // Find the document by boardId
+            { $pull: { columnOrderIds: new ObjectId(column._id) } }, // Push column ID into the array
+            { returnDocument: 'after' } // Return the updated document
+        )
         return result
     } catch (error) { throw error }
 }
