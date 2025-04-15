@@ -3,12 +3,19 @@ import { ObjectId, ReturnDocument } from 'mongodb'
 import Joi from 'joi'
 import { columnModel } from './columnModel '
 import { cardModel } from './cardModel'
+import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators'
+import { pagingSkipValue } from '~/utils/algorithms'
 const BOARD_COLLECTION_NAME = 'boards'
 const BOARD_COLLECTION_SCHEMA = Joi.object({
     title: Joi.string().min(3).max(30).trim().strict().required(),
     slug: Joi.string().min(3).trim().strict().required(),
     description: Joi.string().min(3).max(255).trim().strict().required(),
-    columnOrderIds: Joi.array().items(Joi.string()).default([]),
+    columnOrderIds: Joi.array().items(Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)).default([]),
+    //admin của board
+    ownerIds: Joi.array().items(Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)).default([]),
+    // những thành viên của board
+    memberIds: Joi.array().items(Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)).default([]),
+
     createdAt: Joi.date().timestamp('javascript').default(Date.now()),
     updateAt: Joi.date().timestamp('javascript').default(null),
     _destroy: Joi.bool().default(false)
@@ -108,6 +115,47 @@ const pullColumnOrderIds = async (column) => {
         return result
     } catch (error) { throw error }
 }
+const getBoards = async (userId, page, itemsPerPage) => {
+    try {
+        const queryConditions = [
+            //dk 1: board chưa bị xóa
+            { _destroy: false },
+            //dk 2: userid đang thực hiện request phải thuộc 1 trong 2 mảng ownerIds hoặc memberIds , sd toán tử
+            // $all cua mongodb
+            {
+                $or: [
+                    { ownerIds: { $all: [new ObjectId(userId)] } },
+                    { memberIds: { $all: [new ObjectId(userId)] } }
+                ]
+            }
+        ]
+        const query = await GET_DB().collection(BOARD_COLLECTION_NAME).aggregate(
+            [
+                { $match: { $and: queryConditions } },
+                { $sort: { title: 1 } },
+                //$facet để xử lý nhiều luồng trong 1 query
+                {
+                    $facet: {
+                        // luồng 1 :query boards
+                        // luồng 2: query đến tầng số lượng tất cả số lượng boards trong db và trả về
+                        'queryBoards': [
+                            { $skip: pagingSkipValue(page, itemsPerPage) }, //bỏ qua số lượng bản ghi của những page trước đó
+                            { $limit: 12 }//giới hạn tối đa số lượng bản ghi tối đa trên 1 page
+                        ],
+                        'queryTotalBoards': [{ $count: 'countedAllBoards' }]
+                    }
+                }
+            ],
+            //khai báo thuộc tính collation locale 'en' để fix chữ B hoa và a thường
+            { location: { locale: 'en' } }
+        ).toArray()
+        const res = query[0]
+        return {
+            boards: res.queryBoards || [],
+            totalBoards: res.queryTotalBoards[0]?.countedAllBoards || 0
+        }
+    } catch (error) { throw new Error(error) }
+}
 export const boardModel = {
     createNew,
     findOneById,
@@ -116,5 +164,6 @@ export const boardModel = {
     BOARD_COLLECTION_NAME,
     BOARD_COLLECTION_SCHEMA,
     update,
-    pullColumnOrderIds
+    pullColumnOrderIds,
+    getBoards
 }
