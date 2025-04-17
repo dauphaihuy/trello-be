@@ -5,23 +5,25 @@ import { cardModel } from '~/models/cardModel'
 import ApiError from '~/utils/ApiError'
 import { DEFAULT_ITEMS_PER_PAGE, DEFAULT_PAGE } from '~/utils/constants'
 import { slugify } from '~/utils/index'
-const createNew = async (data) => {
+const createNew = async (userId, reqBody) => {
     try {
         const newBoard = {
-            ...data,
-            slug: slugify(data.title)
+            ...reqBody,
+            slug: slugify(reqBody.title)
         }
-        const createdBoard = await boardModel.createNew(newBoard)
+        const createdBoard = await boardModel.createNew(userId, newBoard)
         const getNewBoard = await boardModel.getDetails(createdBoard.insertedId)
         return getNewBoard
     } catch (error) {
         throw error
     }
 }
-const getDetails = async (id) => {
+const getDetails = async (userId, boardId) => {
     try {
-        const board = await boardModel.getDetails(id)
-        if (!board) throw new ApiError(StatusCodes.NOT_FOUND, 'Board not found')
+        const board = await boardModel.getDetails(userId, boardId)
+        if (!board) {
+            throw new ApiError(StatusCodes.NOT_FOUND, 'Board not found')
+        }
         const resBoard = cloneDeep(board)
         resBoard.columns.forEach(column => {
             column.cards = resBoard.cards.filter(card =>
@@ -70,7 +72,6 @@ const getBoards = async (userId, page, itemsPerPage) => {
         if (!itemsPerPage) itemsPerPage = DEFAULT_ITEMS_PER_PAGE
 
         const results = await boardModel.getBoards(userId, parseInt(page, 10), parseInt(itemsPerPage, 10))
-
         return results
     } catch (error) {
         throw error

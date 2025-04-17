@@ -5,6 +5,7 @@ import { columnModel } from './columnModel '
 import { cardModel } from './cardModel'
 import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators'
 import { pagingSkipValue } from '~/utils/algorithms'
+import { BOARD_TYPES } from '~/utils/constants'
 const BOARD_COLLECTION_NAME = 'boards'
 const BOARD_COLLECTION_SCHEMA = Joi.object({
     title: Joi.string().min(3).max(30).trim().strict().required(),
@@ -15,19 +16,23 @@ const BOARD_COLLECTION_SCHEMA = Joi.object({
     ownerIds: Joi.array().items(Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)).default([]),
     // những thành viên của board
     memberIds: Joi.array().items(Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)).default([]),
-
+    type: Joi.string().allow(BOARD_TYPES),
     createdAt: Joi.date().timestamp('javascript').default(Date.now()),
     updateAt: Joi.date().timestamp('javascript').default(null),
     _destroy: Joi.bool().default(false)
 })
 
-const createNew = async (data) => {
+const createNew = async (userId, data) => {
     try {
         const validData = await validBeforeInsert(data)
+        const newBoardToAdd = {
+            ...validData,
+            ownerIds: new ObjectId(userId)
+        }
         const createdBoard = await GET_DB().collection(BOARD_COLLECTION_NAME)
-            .insertOne(validData)
+            .insertOne(newBoardToAdd)
         return createdBoard
-    } catch (error) { throw error }
+    } catch (error) { throw new Error(error) }
 }
 const validBeforeInsert = async (data) => {
     return await BOARD_COLLECTION_SCHEMA.validateAsync(data, { abortEarly: false })
@@ -40,17 +45,24 @@ const findOneById = async (id) => {
         return result
     } catch (error) { throw error }
 }
-const getDetails = async (id) => {
+const getDetails = async (userId, boardId) => {
     try {
         // const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOne({
         //     _id: new ObjectId(id)
         // })
+        const queryConditions = [
+            { _id: new ObjectId(boardId) },
+            { _destroy: false },
+            {
+                $or: [
+                    { ownerIds: { $all: [new ObjectId(userId)] } },
+                    { memberIds: { $all: [new ObjectId(userId)] } }
+                ]
+            }
+        ]
         const result = await GET_DB().collection(BOARD_COLLECTION_NAME).aggregate([
             {
-                $match: {
-                    _id: new ObjectId(id),
-                    _destroy: false
-                }
+                $match: { $and: queryConditions }
             },
             {
                 $lookup: {
@@ -81,7 +93,7 @@ const pushColumnOrderIds = async (column) => {
             { returnDocument: 'after' } // Return the updated document
         )
         return result
-    } catch (error) { throw error }
+    } catch (error) { throw new Error(error) }
 }
 const INVALID_UPDATE_FIELDS = ['_id', 'createdAt']
 const update = async (boardId, updateData) => {
@@ -150,6 +162,7 @@ const getBoards = async (userId, page, itemsPerPage) => {
             { location: { locale: 'en' } }
         ).toArray()
         const res = query[0]
+        console.log(res)
         return {
             boards: res.queryBoards || [],
             totalBoards: res.queryTotalBoards[0]?.countedAllBoards || 0

@@ -1,22 +1,26 @@
 import { StatusCodes } from 'http-status-codes'
 import Joi from 'joi'
 import { boardService } from '~/services/boardService'
+import ApiError from '~/utils/ApiError'
 import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators'
 
 const createNew = async (req, res, next) => {
     try {
-        const createdBoard = await boardService.createNew(req.body)
+        const userId = req.jwtDecoded._id
+        const createdBoard = await boardService.createNew(userId, req.body)
         res.status(StatusCodes.OK).json(createdBoard)
     } catch (error) {
-        next()
+        next(error)
     }
 }
 const getDetails = async (req, res, next) => {
     try {
-        const getBoard = await boardService.getDetails(req.params.id)
+        const userId = req.jwtDecoded._id
+        const boardId = req.params.id
+        const getBoard = await boardService.getDetails(userId, boardId)
         res.status(StatusCodes.OK).json(getBoard)
     } catch (error) {
-        throw error
+        next(error)
     }
 }
 
@@ -25,7 +29,7 @@ const update = async (req, res, next) => {
         const updatedBoard = await boardService.update(req.params.id, req.body)
         res.status(StatusCodes.OK).json(updatedBoard)
     } catch (error) {
-        throw error
+        next(error)
     }
 }
 const moveCardToDiffColumn = async (req, res, next) => {
@@ -33,7 +37,7 @@ const moveCardToDiffColumn = async (req, res, next) => {
         const result = await boardService.moveCardToDiffColumn(req.body)
         res.status(StatusCodes.OK).json(result)
     } catch (error) {
-        throw error
+        next(error)
     }
 }
 

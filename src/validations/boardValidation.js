@@ -1,13 +1,14 @@
 import { StatusCodes } from 'http-status-codes'
 import Joi from 'joi'
 import ApiError from '~/utils/ApiError'
+import { BOARD_TYPES } from '~/utils/constants'
 import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators'
 const createNew = async (req, res, next) => {
     try {
         const validation = Joi.object({
             title: Joi.string().strict().min(3).max(30).trim().required(),
-            description: Joi.string().strict().min(3).max(255).trim().required()
-
+            description: Joi.string().strict().min(3).max(255).trim().required(),
+            type: Joi.string().allow(BOARD_TYPES),
         })
         await validation.validateAsync(req.body, { abortEarly: false })
         next()
