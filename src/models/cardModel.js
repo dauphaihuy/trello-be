@@ -12,7 +12,7 @@ const CARD_COLLECTION_SCHEMA = Joi.object({
 
     cover: Joi.string().default(null),
     memberIds: Joi.array().items(
-        Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
+        Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)
     ),
     userId: Joi.array().items(
         Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)
@@ -22,7 +22,7 @@ const CARD_COLLECTION_SCHEMA = Joi.object({
         userEmail: Joi.string().pattern(EMAIL_RULE).message(EMAIL_RULE_MESSAGE),
         userAvatar: Joi.string(),
         content: Joi.string(),
-        commentedAt: Joi.date().timestamp(),
+        commentedAt: Joi.date().timestamp()
     }).default([]),
 
     createdAt: Joi.date().timestamp('javascript').default(Date.now),
@@ -80,13 +80,26 @@ const deleteManyById = async (columnId) => {
         return result
     } catch (error) { throw error }
 }
-
+//day phan tu vao dau mang
+const unshiftNewComments = async (cardId, commentData) => {
+    try {
+        console.log(commentData)
+        const result = await GET_DB().collection(CARD_COLLECTION_NAME)
+            .findOneAndUpdate(
+                { _id: new ObjectId(cardId) },
+                { $push: { comments: { $each: [commentData], $position: 0 } } },
+                { returnDocument: 'after' }
+            )
+        return result
+    } catch (error) { throw new Error(error) }
+}
 export const cardModel = {
     CARD_COLLECTION_NAME,
     CARD_COLLECTION_SCHEMA,
     createNew,
     findOneById,
     update,
-    deleteManyById
+    deleteManyById,
+    unshiftNewComments
 
 }
