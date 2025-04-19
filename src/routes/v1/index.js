@@ -4,6 +4,7 @@ import { boardRoute } from './boardRoutes'
 import { columnRoute } from './columnRoute'
 import { cardRoute } from './cardRoute'
 import { userRoute } from './userRoute'
+import { invitationRoute } from './invitationsRoute'
 const Router = express.Router()
 
 //boards API
@@ -14,4 +15,6 @@ Router.use('/columns', columnRoute)
 Router.use('/cards', cardRoute)
 //user API
 Router.use('/users', userRoute)
+//
+Router.use('/invitations', invitationRoute)
 export const APIs_V1 = Router
