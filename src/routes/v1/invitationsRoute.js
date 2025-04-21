@@ -11,5 +11,7 @@ Router.route('/board')
         invitationValidation.createNewBoardInvitation,
         invitationController.createNewBoardInvitation
     )
-
+//lay danh sách nofi theo user
+Router.route('/')
+    .get(authMiddleware.isAuthorized, invitationController.getInvitations)
 export const invitationRoute = Router

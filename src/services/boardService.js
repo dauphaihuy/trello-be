@@ -20,6 +20,7 @@ const createNew = async (userId, reqBody) => {
 }
 const getDetails = async (userId, boardId) => {
     try {
+        console.log(userId, boardId)
         const board = await boardModel.getDetails(userId, boardId)
         if (!board) {
             throw new ApiError(StatusCodes.NOT_FOUND, 'Board not found')
