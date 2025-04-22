@@ -95,7 +95,7 @@ const getDetails = async (userId, boardId) => {
             {
                 $lookup: {
                     from: userModel.USER_COLLECTION_NAME,
-                    localField: 'membersIds',
+                    localField: 'memberIds',
                     foreignField: '_id',
                     as: 'members',
                     pipeline: [

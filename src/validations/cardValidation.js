@@ -21,7 +21,8 @@ const update = async (req, res, next) => {
     const correctCondition = Joi.object({
         title: Joi.string().min(3).max(50).trim().strict(),
         description: Joi.string().optional(),
-        commentToAdd: Joi.optional()
+        commentToAdd: Joi.optional(),
+        incomingMemberInfo: Joi.optional(),
     })
     try {
         const abortEarly = false // không cho phép dừng nếu có nhiều lỗi validation

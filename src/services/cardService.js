@@ -38,7 +38,11 @@ const update = async (cardId, reqBody, cardCoverFile, userInfo) => {
                 userEmail: userInfo.email,
 
             }
-            const updateCard = await cardModel.unshiftNewComments(cardId, commentData)
+            updatedCard = await cardModel.unshiftNewComments(cardId, commentData)
+        }
+        else if (updateData.incomingMemberInfo) {
+            //them hoặc xóa thành viên ra khỏi card
+            updatedCard = await cardModel.updateMembers(cardId, updateData.incomingMemberInfo)
         }
         else {
             //các trường hợp update chung như title description

@@ -1,6 +1,7 @@
 import Joi from 'joi'
 import { ObjectId } from 'mongodb'
 import { GET_DB } from '~/config/mongodb'
+import { CARD_MEMBER_ACTIONS } from '~/utils/constants'
 import { EMAIL_RULE, EMAIL_RULE_MESSAGE, OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators'
 const CARD_COLLECTION_NAME = 'cards'
 const CARD_COLLECTION_SCHEMA = Joi.object({
@@ -13,7 +14,7 @@ const CARD_COLLECTION_SCHEMA = Joi.object({
     cover: Joi.string().default(null),
     memberIds: Joi.array().items(
         Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)
-    ),
+    ).default([]),
     userId: Joi.array().items(
         Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE)
     ).default([]),
@@ -92,6 +93,26 @@ const unshiftNewComments = async (cardId, commentData) => {
         return result
     } catch (error) { throw new Error(error) }
 }
+const updateMembers = async (cardId, incomingMemberInfo) => {
+    try {
+        let updateCondition = {}
+        if (incomingMemberInfo.action === CARD_MEMBER_ACTIONS.ADD) {
+            // Trường hợp thêm
+            updateCondition = { $push: { memberIds: new ObjectId(incomingMemberInfo.userId) } }
+        } else if (incomingMemberInfo.action === CARD_MEMBER_ACTIONS.REMOVE) {
+            // Trường hợp xóa
+            updateCondition = { $pull: { memberIds: new ObjectId(incomingMemberInfo.userId) } }
+        }
+        const result = await GET_DB().collection(CARD_COLLECTION_NAME).findOneAndUpdate(
+            { _id: new ObjectId(cardId) },
+            updateCondition,
+            { returnDocument: 'after' }
+        )
+        return result
+    } catch (error) {
+        throw new Error(error)
+    }
+}
 export const cardModel = {
     CARD_COLLECTION_NAME,
     CARD_COLLECTION_SCHEMA,
@@ -99,6 +120,7 @@ export const cardModel = {
     findOneById,
     update,
     deleteManyById,
-    unshiftNewComments
+    unshiftNewComments,
+    updateMembers
 
 }
