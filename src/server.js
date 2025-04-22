@@ -8,6 +8,9 @@ import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware'
 import cors from 'cors'
 import { corsOptions } from './config/cors'
 import cookieParser from 'cookie-parser'
+import http from 'http'
+import socketIo from 'socket.io'
+import { inviteUserToBoardSocket } from './sockets/inviteUserToBoardSocket'
 const START_SEVER = () => {
   const app = express()
   app.use(cors(corsOptions))
@@ -24,10 +27,26 @@ const START_SEVER = () => {
   app.use(express.json())
   app.use('/v1', APIs_V1)
   app.use(errorHandlingMiddleware)
-  app.listen(env.HOST_NUMBER, env.HOST_NAME, () => {
-    // eslint-disable-next-line no-console
-    console.log(`Hello, I am running at ${env.HOST_NAME}:${env.HOST_NUMBER}/`)
+  // tạo 1 server bọc app của express làm realtime với socketio
+  const server = http.createServer(app)
+  //khởi tạo biến io
+  const io = socketIo(server, { cors: corsOptions })
+  io.on('connection', (socket) => {
+    console.log(socket.id)
+    inviteUserToBoardSocket(socket)
   })
+  if (env.BUILD_MODE === 'production') {
+    server.listen(env.HOST_NUMBER, env.HOST_NAME, () => {
+      // eslint-disable-next-line no-console
+      console.log(`production, I am running at ${env.HOST_NAME}:${env.HOST_NUMBER}/`)
+    })
+
+  } else {
+    server.listen(env.HOST_NUMBER, env.HOST_NAME, () => {
+      // eslint-disable-next-line no-console
+      console.log(`local, I am running at ${env.HOST_NAME}:${env.HOST_NUMBER}/`)
+    })
+  }
 }
 (async () => {
   try {

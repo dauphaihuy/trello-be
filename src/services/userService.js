@@ -142,8 +142,6 @@ const update = async (userId, reqBody, userAvatarFile) => {
             })
         }
         else if (userAvatarFile) {
-            console.log(' truong hop upload avatar')
-
             // truong hop upload file
             const uploadResult = await CloudinaryProvider.streamUpload(userAvatarFile.buffer, 'users')
             updatedUser = await userModel.update(existUser._id, {
@@ -151,11 +149,9 @@ const update = async (userId, reqBody, userAvatarFile) => {
             })
         }
         else {
-            console.log('truong hop update thong tin chung')
             //truong hop update thong tin chung
             updatedUser = await userModel.update(existUser._id, reqBody)
         }
-        console.log(updatedUser)
         return pickUser(updatedUser)
     } catch (error) { throw error }
 }

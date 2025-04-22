@@ -7,7 +7,6 @@ const createNewBoardInvitation = async (req, res, next) => {
         inviteeEmail: Joi.string().required(),
         boardId: Joi.string().required()
     })
-    console.log(req.body)
     try {
         await condition.validateAsync(req.body, { abortEarly: false })
         next()

@@ -185,11 +185,20 @@ const getBoards = async (userId, page, itemsPerPage) => {
             { location: { locale: 'en' } }
         ).toArray()
         const res = query[0]
-        console.log(res)
         return {
             boards: res.queryBoards || [],
             totalBoards: res.queryTotalBoards[0]?.countedAllBoards || 0
         }
+    } catch (error) { throw new Error(error) }
+}
+const pushMembersIds = async (boardId, userId) => {
+    try {
+        const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
+            { _id: new ObjectId(boardId) }, // Find the document by boardId
+            { $push: { memberIds: new ObjectId(userId) } }, // Push column ID into the array
+            { returnDocument: 'after' } // Return the updated document
+        )
+        return result
     } catch (error) { throw new Error(error) }
 }
 export const boardModel = {
@@ -201,5 +210,6 @@ export const boardModel = {
     BOARD_COLLECTION_SCHEMA,
     update,
     pullColumnOrderIds,
-    getBoards
+    getBoards,
+    pushMembersIds
 }

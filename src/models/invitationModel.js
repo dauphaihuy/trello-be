@@ -10,9 +10,10 @@ const { OBJECT_ID_RULE_MESSAGE, OBJECT_ID_RULE } = require('~/utils/validators')
 const INVITATION_COLLECTION_NAME = 'invitations'
 
 const INVITATION_COLLECTION_SCHEMA = Joi.object({
-    inviterId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
-    inviteeId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
+    inviterId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE), //nguoi di moi
+    inviteeId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE), // ng duoc moi
     type: Joi.string().required().valid(...Object.values(INVITATION_TYPES)),
+    //
     boardInvitation: Joi.object({
         boardId: Joi.string().required().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE),
         status: Joi.string().valid(...Object.values(BOARD_INVITATION_STATUS))
@@ -29,7 +30,6 @@ const validateBeforeCreate = async (data) => {
 }
 const createNewBoardInvitation = async (data) => {
     try {
-        console.log('valid data', data)
         const validData = await validateBeforeCreate(data)
         // Biến để lưu dữ liệu liên quan tới ObjectId chuẩn chính
         const newInvitationToAdd = {
@@ -85,9 +85,7 @@ const findByUser = async (userId) => {
             { _destroy: false }
         ]
         const results = await GET_DB().collection(INVITATION_COLLECTION_NAME).aggregate([
-            {
-                $match: { $and: queryConditions }
-            },
+            { $match: { $and: queryConditions } },
             {
                 $lookup: {
                     from: userModel.USER_COLLECTION_NAME,
@@ -119,8 +117,13 @@ const findByUser = async (userId) => {
 
     } catch (error) { throw error }
 }
+const findOneById = async (invitationId) => {
+    const result = await GET_DB().collection(INVITATION_COLLECTION_NAME).findOne({ _id: new ObjectId(invitationId) })
+    return result
+}
 export const invitationModel = {
     update,
     createNewBoardInvitation,
-    findByUser
+    findByUser,
+    findOneById
 }

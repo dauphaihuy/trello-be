@@ -11,6 +11,11 @@ Router.route('/board')
         invitationValidation.createNewBoardInvitation,
         invitationController.createNewBoardInvitation
     )
+Router.route('/board/:invitationId')
+    .put(
+        authMiddleware.isAuthorized,
+        invitationController.updateBoardInvitation
+    )
 //lay danh sách nofi theo user
 Router.route('/')
     .get(authMiddleware.isAuthorized, invitationController.getInvitations)

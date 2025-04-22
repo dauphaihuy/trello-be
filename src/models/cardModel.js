@@ -83,7 +83,6 @@ const deleteManyById = async (columnId) => {
 //day phan tu vao dau mang
 const unshiftNewComments = async (cardId, commentData) => {
     try {
-        console.log(commentData)
         const result = await GET_DB().collection(CARD_COLLECTION_NAME)
             .findOneAndUpdate(
                 { _id: new ObjectId(cardId) },
