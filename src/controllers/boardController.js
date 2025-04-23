@@ -44,8 +44,9 @@ const moveCardToDiffColumn = async (req, res, next) => {
 const getBoards = async (req, res, next) => {
     try {
         const userId = req.jwtDecoded._id // Lấy userId từ payload được truyền vào trong query url từ phía FE nên BE sẽ lấy thông qua req.query
-        const { page, itemsPerPage } = req.query
-        const results = await boardService.getBoards(userId, page, itemsPerPage)
+        const { page, itemsPerPage, q } = req.query
+        const queryFilters = q
+        const results = await boardService.getBoards(userId, page, itemsPerPage, queryFilters)
 
         res.status(StatusCodes.OK).json(results)
     } catch (error) { next(error) }
