@@ -37,13 +37,13 @@ const START_SEVER = () => {
     inviteUserToBoardSocket(socket)
   })
   if (env.BUILD_MODE === 'production') {
-    server.listen(port, env.HOST_NAME, () => {
+    server.listen(port, () => {
       // eslint-disable-next-line no-console
       console.log(`production, I am running at ${env.HOST_NAME}:${env.PORT}/`)
     })
 
   } else {
-    server.listen(port, env.HOST_NAME, () => {
+    server.listen(port, () => {
       // eslint-disable-next-line no-console
       console.log(`local, I am running at ${env.HOST_NAME}:${env.PORT}/`)
     })
