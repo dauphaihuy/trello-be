@@ -13,6 +13,7 @@ import socketIo from 'socket.io'
 import { inviteUserToBoardSocket } from './sockets/inviteUserToBoardSocket'
 const START_SEVER = () => {
   const app = express()
+  const port = process.env.PORT || 4000
   app.use(cors(corsOptions))
   // Fix cái vụ Cache from disk của ExpressJS
   // https://stackoverflow.com/q/532340717/8324172
@@ -36,15 +37,15 @@ const START_SEVER = () => {
     inviteUserToBoardSocket(socket)
   })
   if (env.BUILD_MODE === 'production') {
-    server.listen(env.HOST_NUMBER, env.HOST_NAME, () => {
+    server.listen(port, env.HOST_NAME, () => {
       // eslint-disable-next-line no-console
-      console.log(`production, I am running at ${env.HOST_NAME}:${env.HOST_NUMBER}/`)
+      console.log(`production, I am running at ${env.HOST_NAME}:${env.PORT}/`)
     })
 
   } else {
-    server.listen(env.HOST_NUMBER, env.HOST_NAME, () => {
+    server.listen(port, env.HOST_NAME, () => {
       // eslint-disable-next-line no-console
-      console.log(`local, I am running at ${env.HOST_NAME}:${env.HOST_NUMBER}/`)
+      console.log(`local, I am running at ${env.HOST_NAME}:${env.PORT}/`)
     })
   }
 }
