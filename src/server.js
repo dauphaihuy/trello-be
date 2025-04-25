@@ -19,7 +19,7 @@ const START_SEVER = () => {
   // https://stackoverflow.com/q/532340717/8324172
   app.use((req, res, next) => {
     res.set('Cache-Control', 'no-store')
-    next();
+    next()
   })
   app.use(cookieParser())
   app.get('/', (req, res) => {
