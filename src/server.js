@@ -39,11 +39,11 @@ const START_SEVER = () => {
   if (env.BUILD_MODE === 'production') {
     server.listen(port, () => {
       // eslint-disable-next-line no-console
-      console.log(`production, I am running at ${env.HOST_NAME}:${env.PORT}/`)
+      console.log(`production, I am running at ${port}/`)
     })
 
   } else {
-    server.listen(port, () => {
+    server.listen(env.PORT, env.HOST_NAME, () => {
       // eslint-disable-next-line no-console
       console.log(`local, I am running at ${env.HOST_NAME}:${env.PORT}/`)
     })
